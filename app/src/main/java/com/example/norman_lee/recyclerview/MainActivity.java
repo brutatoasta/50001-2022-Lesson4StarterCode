@@ -44,14 +44,37 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         //TODO 11.1 Get references to the widgets
+        recyclerView = findViewById(R.id.charaRecyclerView);
+        imageViewAdded = findViewById(R.id.imageViewAdded);
 
         //TODO 12.7 Load the Json string from shared Preferences
+        mPreferences = getSharedPreferences(PREF_FILE, MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = mPreferences.getString(KEY_DATA, "");
         //TODO 12.8 Initialize your dataSource object with the Json string
+        if (json.equals("")) {
+            dataSource = new DataSource();
+        } else {
+            dataSource = gson.fromJson(json, DataSource.class);
+        }
 
         //TODO 11.2 Create your dataSource object by calling Utils.firstLoadImages
+        ArrayList<Integer> ids = new ArrayList<>();
+        ids.add(R.drawable.bulbasaur);
+        ids.add(R.drawable.eevee);
+        ids.add(R.drawable.gyrados);
+        ids.add(R.drawable.pikachu);
+        ids.add(R.drawable.psyduck);
+        ids.add(R.drawable.snorlax);
+        ids.add(R.drawable.spearow);
+        ids.add(R.drawable.squirtle);
+        dataSource = Utils.firstLoadImages(MainActivity.this,ids);
         //TODO 11.3 --> Go to CharaAdapter
         //TODO 11.8 Complete the necessary code to initialize your RecyclerView
-
+        charaAdapter = new CharaAdapter(MainActivity.this, dataSource);
+        recyclerView.setAdapter(charaAdapter);
+        // recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+        recyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this,3));
         //TODO 12.9 [OPTIONAL] Add code to delete a RecyclerView item upon swiping. See notes for the code.
 
 
@@ -66,12 +89,20 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        Log.i("MainActivity", "onCreate");
     }
 
     //TODO 12.6 Complete onPause to store the DataSource object in SharedPreferences as a JSON string
     @Override
     protected void onPause(){
         super.onPause();
+        SharedPreferences.Editor prefsEditor = mPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(dataSource);
+        prefsEditor.putString(KEY_DATA, json);
+        prefsEditor.apply();
+        Log.i("MainActivity", "onPause");
     }
 
 
@@ -103,8 +134,15 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if( requestCode == REQUEST_CODE_IMAGE && resultCode == Activity.RESULT_OK){
-        }
+            String name = data.getStringExtra("name");
+            String path = data.getStringExtra("path");
+            dataSource.addData(name,path);
+            charaAdapter.notifyDataSetChanged();
+            imageViewAdded.setImageBitmap(dataSource.getImage(dataSource.getSize()-1));
+            Toast.makeText(MainActivity.this, R.string.data_added, Toast.LENGTH_LONG);
 
+        }
+        Log.i("MainActivity", "onActivityResult");
 
     }
 }

@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">SUTD_Pokedex</string>
     <string name="action_settings">Settings</string>
+    <string name="file_not_found">File Not Found!</string>
+    <string name="io_error">IO Error</string>
+    <string name="data_added">A new Pokemon is added to the Pokedex</string>
 </resources>

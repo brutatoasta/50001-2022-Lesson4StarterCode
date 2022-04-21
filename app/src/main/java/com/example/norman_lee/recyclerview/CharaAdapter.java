@@ -21,6 +21,7 @@ public class CharaAdapter extends RecyclerView.Adapter<CharaAdapter.CharaViewHol
     CharaAdapter(Context context, DataSource dataSource){
         mInflater = LayoutInflater.from(context);
         this.context = context;
+        this.dataSource = dataSource;
     }
 
 
@@ -29,18 +30,31 @@ public class CharaAdapter extends RecyclerView.Adapter<CharaAdapter.CharaViewHol
     @Override
     public CharaViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View itemView = mInflater.inflate(R.layout.pokemon, viewGroup, false);
+        // Getting Each Item to Respond to Clicks
+        // not on TODO
+        // Option 1
+        /*
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(CharaAdapter.this.context, "hello", Toast.LENGTH_LONG).show();
+                Log.i("CharaAdapter", "hello");
+            }
+        }); */
         return new CharaViewHolder(itemView);
     }
 
     //TODO 11.6 the data at position i is extracted and placed on the i-th card
     @Override
     public void onBindViewHolder(@NonNull CharaViewHolder charaViewHolder, int i) {
+        charaViewHolder.imageViewChara.setImageBitmap(dataSource.getImage(i));
+        charaViewHolder.textViewName.setText(dataSource.getName(i));
     }
 
     //TODO 11.7 the total number of data points must be returned here
     @Override
     public int getItemCount() {
-        return 0;
+        return dataSource.getSize();
     }
 
     //TODO 11.4 complete the constructor to initialize the instance variables
@@ -51,6 +65,8 @@ public class CharaAdapter extends RecyclerView.Adapter<CharaAdapter.CharaViewHol
 
         CharaViewHolder(View view){
             super(view);
+            imageViewChara = view.findViewById(R.id.cardViewImage);
+            textViewName = view.findViewById(R.id.cardViewTextName);
         }
 
     }
